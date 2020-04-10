@@ -1,0 +1,27 @@
+{
+  "name": "promise-of-methoil",
+  "version": "1.0.0",
+  "description": "Custom promise implementation",
+  "main": "index.js",
+  "scripts": {
+    "test": "git"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/methoil/promise-of-methoil.git"
+  },
+  "keywords": [
+    "promise",
+    "javascript",
+    "typescript"
+  ],
+  "author": "Boris Mateev",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/methoil/promise-of-methoil/issues"
+  },
+  "homepage": "https://github.com/methoil/promise-of-methoil#readme",
+  "devDependencies": {
+    "typescript": "^3.8.3"
+  }
+}
