@@ -13,7 +13,44 @@ class MPromise {
   handlers: any[];
 
   constructor(executor) {
-      this.doResolve(executor, this.resolve, this.reject);
+    this.doResolve(executor, this.resolve, this.reject);
+  }
+
+  public done(onFulfilled, onRejected) {
+    // ensure we're always asynchronous
+    setTimeout(() => {
+      this.handle({
+        onFulfilled,
+        onRejected,
+      });
+    }, 0);
+  }
+
+  public then(onFulfilled, onRejected) {
+    return new MPromise((resolve, reject) => {
+      return this.done(
+        result => {
+          if (typeof onFulfilled === "function") {
+            try {
+              return resolve(onFulfilled(result));
+            } catch (ex) {
+              return reject(ex);
+            }
+          } else {
+            return resolve(result);
+          }
+        },
+        err => {
+          if (typeof onRejected === "function") {
+            try {
+              return resolve.onRejected(err);
+            } catch (ex) {
+              return reject(ex);
+            }
+          }
+        }
+      );
+    });
   }
 
   resolve(result) {
@@ -29,7 +66,7 @@ class MPromise {
     }
   }
 
-   /**
+  /**
    * Take a potentially misbehaving resolver function and make sure
    * onFulfilled and onRejected are only called once.
    *
@@ -64,11 +101,27 @@ class MPromise {
   fulfill(result: any) {
     this.state = state.fulfilled;
     this.value = result;
+    this.handlers.forEach(this.handle);
+    this.handlers = null;
   }
 
   reject(error: Object | string) {
     this.state = state.rejected;
     this.value = error;
+    this.handlers.forEach(this.handle);
+    this.handlers = null;
+  }
+
+  handle(handler) {
+    if (this.state === state.pending) {
+      this.handlers.push(handler);
+    } else {
+      if (this.state === state.fulfilled) {
+        handler.onFulfilled(this.value);
+      } else if (this.state === state.fulfilled) {
+        handler.onReject(this.value);
+      }
+    }
   }
 
   /**
